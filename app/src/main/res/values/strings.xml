@@ -9,6 +9,9 @@
     <string name="cancelled">Cancelled</string>
     <string name="sending">Sending...</string>
     <string name="image_upload">Image Upload</string>
+    <string name="select_action">Select Action</string>
+    <string name="take_picture">Take Picture From Camera</string>
+    <string name="open_gallery">Select Picture From Gallery</string>
     <string name="manual_input">Manual Input</string>
     <string name="manual_form">Manual Form</string>
     <string name="confirmation">Confirmation</string>

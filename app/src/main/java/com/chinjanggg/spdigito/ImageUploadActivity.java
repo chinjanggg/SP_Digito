@@ -25,7 +25,6 @@ import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,7 +76,9 @@ public class ImageUploadActivity extends AppCompatActivity {
         setContentView(R.layout.activity_image_upload);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        //Set action bar title and remove back button
         getSupportActionBar().setTitle(R.string.image_upload);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         btnSelect = findViewById(R.id.btnSelect);
         btnUpload = findViewById(R.id.btnUpload);
@@ -194,10 +195,10 @@ public class ImageUploadActivity extends AppCompatActivity {
 
     private void selectPicture() {
         AlertDialog.Builder pictureSelectDialog = new AlertDialog.Builder(this);
-        pictureSelectDialog.setTitle("Select Action");
+        pictureSelectDialog.setTitle(R.string.select_action);
         String[] items = {
-                "Take Picture From Camera",
-                "Select Picture From Gallery"
+                getString(R.string.take_picture),
+                getString(R.string.open_gallery)
         };
         pictureSelectDialog.setItems(items,
                 new DialogInterface.OnClickListener() {
