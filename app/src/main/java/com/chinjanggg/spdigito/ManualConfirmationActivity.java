@@ -96,7 +96,7 @@ public class ManualConfirmationActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Cannot Load Patient Data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.err_msg_load_data, Toast.LENGTH_SHORT).show();
                 t.printStackTrace();
             }
         });
