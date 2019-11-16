@@ -13,6 +13,7 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -36,6 +37,12 @@ public class CameraActivity extends AppCompatActivity {
     private Camera.PictureCallback mPicture;
     private boolean cameraFront = false;
     public static Bitmap imageBP;
+    public static Bitmap cropImage;
+    private int preview_width;
+    private final int preview_height = 960;
+    private final int CROP_WIDTH = 480;
+    private final int CROP_HEIGHT = 640;
+    private int startX, startY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +54,9 @@ public class CameraActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        setPreviewWidth();
+        setCropLocation();
 
         RelativeLayout cameraPreview = findViewById(R.id.cameraPreview);
         FloatingActionButton btnCapture = findViewById(R.id.btnCamera);
@@ -79,6 +89,16 @@ public class CameraActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void setPreviewWidth() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        preview_width = displayMetrics.widthPixels;
+    }
+    private void setCropLocation() {
+        startX = (preview_width - CROP_WIDTH) / 2;
+        startY = (preview_height - CROP_HEIGHT) / 2;
     }
 
     public void chooseCamera() {
@@ -160,7 +180,6 @@ public class CameraActivity extends AppCompatActivity {
         //when on Pause, release camera in order to be used from other applications
         releaseCamera();
     }
-
     private void releaseCamera() {
         // stop and release camera
         if (mCamera != null) {
@@ -199,10 +218,11 @@ public class CameraActivity extends AppCompatActivity {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                 //Rotate image if required
                 imageBP = rotateImage(bitmap, 90);
+                cropImage = cropImage(imageBP);
 
                 //Save rotated image
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                imageBP.compress(Bitmap.CompressFormat.JPEG, 50, bos);
+                cropImage.compress(Bitmap.CompressFormat.JPEG, 30, bos);
                 byte[] rotatedImage = bos.toByteArray();
                 try {
                     FileOutputStream fos = new FileOutputStream(imageFile);
@@ -257,6 +277,16 @@ public class CameraActivity extends AppCompatActivity {
         Bitmap rotatedImage = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), m, true);
         image.recycle();
         return rotatedImage;
+    }
+    private Bitmap cropImage(Bitmap image) {
+        int imageWidth = image.getWidth();
+        int imageHeight = image.getHeight();
+        int crop_startX = startX * imageWidth / preview_width;
+        int crop_startY = startY * imageHeight / preview_height;
+        int crop_width = CROP_WIDTH * imageWidth / preview_width;
+        int crop_height = CROP_HEIGHT * imageHeight / preview_height;
+
+        return Bitmap.createBitmap(image, crop_startX, crop_startY, crop_width, crop_height);
     }
 
     @Override

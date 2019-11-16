@@ -361,8 +361,8 @@ public class ImageUploadActivity extends AppCompatActivity {
             clearText();
             switch (requestCode) {
                 case CAMERA:
-                    imageBP = CameraActivity.imageBP;
-                    setImageView(imageBP);
+                    //imageBP = CameraActivity.cropImage;
+                    //setImageView(imageBP);
                     break;
                 case GALLERY:
                     if (data != null) {

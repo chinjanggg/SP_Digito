@@ -46,8 +46,8 @@ public class ImagePreviewActivity extends AppCompatActivity {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ImageUploadActivity.imgSelect.setImageBitmap(CameraActivity.imageBP);
-                ImageUploadActivity.imageBP = CameraActivity.imageBP;
+                ImageUploadActivity.imageBP = CameraActivity.cropImage;
+                ImageUploadActivity.imgSelect.setImageBitmap(ImageUploadActivity.imageBP);
                 setResult(RESULT_OK, null);
                 ImagePreviewActivity.this.finish();
             }
