@@ -9,7 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
-import android.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -35,7 +36,6 @@ public class CameraActivity extends AppCompatActivity {
     private Camera mCamera;
     private CameraPreview mPreview;
     private Camera.PictureCallback mPicture;
-    private boolean cameraFront = false;
     public static Bitmap imageBP;
     public static Bitmap cropImage;
     private int preview_width;
@@ -60,33 +60,19 @@ public class CameraActivity extends AppCompatActivity {
 
         RelativeLayout cameraPreview = findViewById(R.id.cameraPreview);
         FloatingActionButton btnCapture = findViewById(R.id.btnCamera);
-        FloatingActionButton btnSwitch = findViewById(R.id.btnSwitch);
 
         mCamera =  Camera.open();
         mCamera.setDisplayOrientation(90);
         mPreview = new CameraPreview(this, mCamera);
         cameraPreview.addView(mPreview);
         mCamera.startPreview();
+        mPicture = getPictureCallback();
 
         btnCapture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "Captured!", Toast.LENGTH_SHORT).show();
                 mCamera.takePicture(null, null, mPicture);
-            }
-        });
-
-        btnSwitch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //get the number of cameras
-                int camerasNumber = Camera.getNumberOfCameras();
-                if (camerasNumber > 1) {
-                    //release the old camera instance
-                    //switch camera, from the front and the back and vice versa
-
-                    releaseCamera();
-                    chooseCamera();
-                }
             }
         });
     }
@@ -99,67 +85,6 @@ public class CameraActivity extends AppCompatActivity {
     private void setCropLocation() {
         startX = (preview_width - CROP_WIDTH) / 2;
         startY = (preview_height - CROP_HEIGHT) / 2;
-    }
-
-    public void chooseCamera() {
-        //if the camera preview is the front
-        if (cameraFront) {
-            int cameraId = findBackFacingCamera();
-            if (cameraId >= 0) {
-                //open the backFacingCamera
-                //set a picture callback
-                //refresh the preview
-
-                mCamera = Camera.open(cameraId);
-                mCamera.setDisplayOrientation(90);
-                mPicture = getPictureCallback();
-                mPreview.refreshCamera(mCamera);
-            }
-        } else {
-            int cameraId = findFrontFacingCamera();
-            if (cameraId >= 0) {
-                //open the backFacingCamera
-                //set a picture callback
-                //refresh the preview
-                mCamera = Camera.open(cameraId);
-                mCamera.setDisplayOrientation(90);
-                mPicture = getPictureCallback();
-                mPreview.refreshCamera(mCamera);
-            }
-        }
-    }
-    private int findFrontFacingCamera() {
-
-        int cameraId = -1;
-        // Search for the front facing camera
-        int numberOfCameras = Camera.getNumberOfCameras();
-        for (int i = 0; i < numberOfCameras; i++) {
-            Camera.CameraInfo info = new Camera.CameraInfo();
-            Camera.getCameraInfo(i, info);
-            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                cameraId = i;
-                cameraFront = true;
-                break;
-            }
-        }
-        return cameraId;
-    }
-    private int findBackFacingCamera() {
-        int cameraId = -1;
-        //Search for the back facing camera
-        //get the number of cameras
-        int numberOfCameras = Camera.getNumberOfCameras();
-        //for every camera check
-        for (int i = 0; i < numberOfCameras; i++) {
-            Camera.CameraInfo info = new Camera.CameraInfo();
-            Camera.getCameraInfo(i, info);
-            if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
-                cameraId = i;
-                cameraFront = false;
-                break;
-            }
-        }
-        return cameraId;
     }
 
     public void onResume() {
@@ -214,9 +139,10 @@ public class CameraActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                Uri imageURI = Uri.fromFile(imageFile);
+                //Uri imageURI = Uri.fromFile(imageFile);
                 Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                 //Rotate image if required
+                //imageBP = rotateIfRequired(bitmap, imageURI);
                 imageBP = rotateImage(bitmap, 90);
                 cropImage = cropImage(imageBP);
 
