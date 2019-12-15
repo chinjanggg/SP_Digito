@@ -61,7 +61,7 @@ public class CameraActivity extends AppCompatActivity {
         RelativeLayout cameraPreview = findViewById(R.id.cameraPreview);
         FloatingActionButton btnCapture = findViewById(R.id.btnCamera);
 
-        mCamera =  Camera.open();
+        mCamera = Camera.open();
         mCamera.setDisplayOrientation(90);
         mPreview = new CameraPreview(this, mCamera);
         cameraPreview.addView(mPreview);
